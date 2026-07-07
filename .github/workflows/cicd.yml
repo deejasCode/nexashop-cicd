@@ -9,7 +9,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -24,6 +24,15 @@ jobs:
     - name: Install dependencies
       run: pip install pytest pytest-cov
 
+    - name: Automated Build
+      run: echo "Building NexaShop application..."
+
+    - name: Unit Tests with coverage
+      run: pytest test_app.py -v --cov=app --cov-report=xml --cov-report=term-missing -k "test_get"
+
+    - name: Integration Tests
+      run: pytest test_app.py -v --cov=app --cov-report=xml --cov-report=term-missing -k "test_calculate"
+
     - name: Static Code Analysis - SonarCloud
       uses: SonarSource/sonarqube-scan-action@v5
       env:
@@ -35,15 +44,8 @@ jobs:
           -Dsonar.projectKey=deejasCode_nexashop-cicd
           -Dsonar.python.version=3.10
           -Dsonar.sources=.
-
-    - name: Automated Build
-      run: echo "Building NexaShop application..."
-
-    - name: Unit Tests with coverage
-      run: pytest test_app.py -v --cov=app --cov-report=term-missing -k "test_get"
-
-    - name: Integration Tests
-      run: pytest test_app.py -v --cov=app --cov-report=term-missing -k "test_calculate"
+          -Dsonar.tests=test_app.py
+          -Dsonar.python.coverage.reportPaths=coverage.xml
 
     - name: Build Docker image
       run: echo "Building NexaShop Docker image and pushing to Docker Hub..."
