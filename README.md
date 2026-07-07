@@ -11,13 +11,15 @@ NexaShop, a mid-sized consumer electronics e-commerce site, manages its web app 
 ## Pipeline Stages
 1. Code Commit & Version Control
 2. Automated Build
-3. Code Quality Analysis
-4. Automated Testing
-5. Artefact Creation & Containerisation
-6. Deployment to Staging
-7. Manual Approval
-8. Deployment to Production
-9. Monitoring
+3. Code Quality Analysis (SonarCloud)
+4. Unit Testing
+5. Integration Testing
+6. Artefact Creation (Docker image build)
+7. Artefact Push (to Docker registry)
+8. Deployment to Staging
+9. Manual Approval
+10. Deployment to Production
+11. Monitoring
 
 ## KPIs
 - Automated Test Code Coverage (ATCC): 75%
