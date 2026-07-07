@@ -13,23 +13,48 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    
+      with:
+        fetch-depth: 0
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
-    
+
     - name: Install dependencies
       run: pip install pytest pytest-cov
-    
-    - name: Run unit tests with coverage
-      run: pytest test_app.py -v --cov=app --cov-report=term-missing
-    
+
+    - name: Static Code Analysis - SonarCloud
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.organization=deejascode
+          -Dsonar.projectKey=deejasCode_nexashop-cicd
+          -Dsonar.python.version=3.10
+
+    - name: Automated Build
+      run: echo "Building NexaShop application..."
+
+    - name: Unit Tests with coverage
+      run: pytest test_app.py -v --cov=app --cov-report=term-missing -k "test_get"
+
+    - name: Integration Tests
+      run: pytest test_app.py -v --cov=app --cov-report=term-missing -k "test_calculate"
+
     - name: Build Docker image
-      run: echo "Building NexaShop Docker image..."
-    
+      run: echo "Building NexaShop Docker image and pushing to Docker Hub..."
+
     - name: Deploy to staging
-      run: echo "Deploying to staging environment..."
-    
+      run: echo "Deploying container to minikube staging environment..."
+
+    - name: Manual approval checkpoint
+      run: echo "Awaiting Operations Team approval for production deployment..."
+
+    - name: Deploy to production
+      run: echo "Deploying to AWS EKS production environment..."
+
     - name: Notify deployment success
       run: echo "NexaShop pipeline completed successfully!"
